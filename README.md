@@ -1,6 +1,6 @@
-# Class Management App - Frontend Boilerplate
+# Class Management App - Frontend Boilerplate (Currently Setup)
 
-Chào mừng bạn đến với dự án **Class Management App (Frontend)**! 
+Chào mừng bạn đến với dự án **Class Management App (Frontend)**!
 
 Dự án này được thiết kế dựa trên triết lý **"Lego" (Feature-Based Architecture / FSD - Feature-Sliced Design)**. Kiến trúc này mang âm hưởng của **DDD (Domain-Driven Design)** từ Backend nhưng được tinh chỉnh thực dụng và gọn nhẹ nhất cho Frontend, giúp dự án linh hoạt, dễ mở rộng và đặc biệt: **Dễ dàng xóa bỏ/thêm mới tính năng mà không để lại rác (side-effects)**.
 
@@ -60,7 +60,7 @@ src/
 │       ├── components/ # (VD: ClassList.tsx, ClassDetail.tsx...)
 │       ├── socket/     # Lắng nghe/phát event socket riêng cho Class (VD: Cập nhật sĩ số realtime)
 │       ├── types/      # Định nghĩa TypeScript riêng cho Class
-│       └── index.ts    
+│       └── index.ts  
 │
 ├── pages/              # 🖥 CÁC TRANG DIỆN MẠO (Composed Views)
 │   ├── Login/          # Lắp ghép tính năng Auth
@@ -101,6 +101,7 @@ Với hệ thống có tính năng thời gian thực (real-time) tương tác v
 ## 🧱 Hướng dẫn "Chơi Lego" (Phát triển tính năng)
 
 ### 1. Luồng Lắp Ráp Nâng Cao (Page Composition)
+
 Mô hình "Lego" hoạt động hoàn hảo khi bạn phân tách rõ **Logic (Feature)** và **Hiển thị (Page)**:
 
 * **Feature (`src/features/...`):** Là những khối Lego đặc. Mỗi khối chứa đủ Logic, API, UI cục bộ (Ví dụ: `LoginForm.tsx` có nút Đăng nhập, có gọi API kiểm tra mật khẩu).
@@ -109,8 +110,10 @@ Mô hình "Lego" hoạt động hoàn hảo khi bạn phân tách rõ **Logic (F
 * **Router (`src/routes/AppRoutes.tsx`):** Chỉ làm việc với `pages/`. Khi url là `/login`, nó render `<LoginPage />`.
 
 ### 2. Tạo một tính năng mới (Thêm khối Lego)
+
 Khi bạn cần làm một tính năng mới, ví dụ: **Quản lý Sinh viên (Students)**.
 Hãy tạo một thư mục mới tại `src/features/students/` và cô lập toàn bộ logic, giao diện, API của sinh viên vào trong thư mục này.
+
 - `students/api.ts`: Nơi chứa config gọi API lấy danh sách sinh viên.
 - `students/hooks/useStudents.ts`: Sử dụng TanStack Query gọi file API trên.
 - `students/components/StudentList.tsx`: Gọi Hook trên để render danh sách ra UI.
@@ -121,11 +124,13 @@ Sau đó, qua `src/pages/Students/` tạo `StudentsPage.tsx` để import và b�
 Cuối cùng, vào `src/routes/AppRoutes.tsx` để gán `StudentsPage` vào Route `/students`. Xong!
 
 ### 3. Xóa một tính năng (Tháo khối Lego)
+
 Giả sử dự án này được deploy cho một trung tâm không cần tính năng **Quản lý Sinh viên**.
+
 1. Vào thư mục `src/features/`, **xóa thẳng tay thư mục `students/`**.
 2. Vào thư mục `src/pages/`, **xóa thư mục `Students/`**.
 3. Vào thư mục `src/routes/AppRoutes.tsx`, xóa dòng config đường dẫn chứa chữ `/students`.
-🎉 **Kết quả:** Dự án sạch bóng tính năng Sinh viên! CSS bị xóa, API bị xóa, Logic (Query/Zustand) bị xóa. Không để lại mã rác tàn dư nào.
+   🎉 **Kết quả:** Dự án sạch bóng tính năng Sinh viên! CSS bị xóa, API bị xóa, Logic (Query/Zustand) bị xóa. Không để lại mã rác tàn dư nào.
 
 ---
 
