@@ -1,9 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #059669;
+  --color-heading: #064E3B;
+  --color-body: #475569;
+  --color-accent: #FB7185;
+  --color-bg-app: #F0FDF4;
+}
 
 @layer base {
   body {
-    @apply antialiased text-gray-900 bg-gray-50;
+    @apply antialiased text-body bg-bg-app;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-heading;
   }
 }

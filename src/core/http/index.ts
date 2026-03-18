@@ -1,4 +1,6 @@
+// src/core/http/index.ts
 import axios from 'axios';
+import { useAuthStore } from '../../stores/authStore';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -13,11 +15,10 @@ export const httpClient = axios.create({
 // Interceptor cho Request: Đính kèm Token
 httpClient.interceptors.request.use(
     (config) => {
-        // Ví dụ cách lấy token từ Zustand store, 
-        // const token = useAuthStore.getState().token;
-        // if (token && config.headers) {
-        //   config.headers.Authorization = `Bearer ${token}`;
-        // }
+        const token = useAuthStore.getState().token;
+        if (token && config.headers) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => {
@@ -31,10 +32,10 @@ httpClient.interceptors.response.use(
         return response.data; // Trả về data luôn để ngắn gọn
     },
     (error) => {
-        // Xử lý 401 Unauthorized toàn app (đẩy về trang login...)
+        // Xử lý 401 Unauthorized toàn app (đẩy về trang login)
         if (error.response?.status === 401) {
-            console.warn('Unauthorized, redirecting to login...');
-            // Code logout/redirect ở đây
+            useAuthStore.getState().logout();
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

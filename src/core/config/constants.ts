@@ -7,7 +7,8 @@ export const STORAGE_KEYS = {
 };
 
 export const ROLES = {
-    ADMIN: 'ADMIN',
-    TEACHER: 'TEACHER',
-    STUDENT: 'STUDENT',
-};
+    ADMIN: 'admin',
+    TEACHER: 'teacher',
+    STUDENT: 'student',
+    PARENT: 'parent',
+} as const;
