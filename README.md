@@ -24,20 +24,82 @@ Sự kết hợp hoàn hảo này mang lại hiệu suất cao, phát triển nh
 
 Ứng dụng được định hướng theo phong cách **"Clean & Friendly UI"**, biến một công cụ quản lý khô khan thành một **"không gian học tập thú vị"** dành cho trẻ em và Gen Z.
 
-### 🍱 Hệ thống Bento Grid
-Chúng tôi sử dụng cấu trúc **Bento Grid** cho các Dashboard. Các chức năng được chia thành các ô (cards) với kích thước khác nhau, bo tròn mềm mại, giúp giao diện trực quan, hiện đại và cực kỳ dễ thao tác trên cả desktop lẫn mobile.
+Từ phiên bản này, layout tổng thể được lấy cảm hứng mạnh từ **Instagram Web**:
+
+- **Sidebar trái cố định**: chứa avatar, tên app, menu chính (Home, Lớp học, Bài tập, Tin nhắn, Thông báo, Hồ sơ).
+- **Feed trung tâm**: hiển thị dòng hoạt động chính (class feed, bài giảng, bài tập, thông báo quan trọng).
+- **Panel phải**: gợi ý lớp học / gia sư / học liệu gợi ý theo vai trò người dùng.
+
+Tất cả vẫn sử dụng **tone màu xanh Emerald – học thuật, tích cực**, nhưng bố cục được “social hoá” để gần gũi với thói quen của Gen Z (news feed, stories, DM).
+
+### 🧭 Layout 3 cột kiểu Instagram
+
+**1. Sidebar trái (Navigation)**
+
+- Logo + tên app.
+- Menu icon + label:
+  - `Trang chủ` – tổng hợp feed hoạt động.
+  - `Lớp học` – danh sách lớp tham gia / phụ trách.
+  - `Bài tập` – bài tập cần nộp / đã giao.
+  - `Tin nhắn` – chat 1–1 hoặc nhóm (sau này).
+  - `Thông báo` – list notification, badge đếm.
+  - `Hồ sơ` – trang Profile, đổi mật khẩu.
+- Nút **Tạo lớp / Tạo bài tập** nổi bật (tuỳ role giáo viên).
+
+**2. Cột giữa (Main Feed)**
+
+- Thanh “stories” ngang phía trên (tương tự Instagram Stories) dùng cho:
+  - Lớp học nổi bật.
+  - Buổi học sắp tới.
+  - Bài tập sắp đến hạn.
+- Bên dưới là **cards dạng feed**:
+  - Card “Lớp mới tạo”, “Bài tập mới giao”, “Điểm mới cập nhật”, “Thông báo từ giáo viên”.
+  - Mỗi card có avatar, tiêu đề, metadata (thời gian, lớp), nút “Xem chi tiết”.
+
+**3. Cột phải (Right Panel)**
+
+- Khối “Tài khoản của bạn” – quick info user hiện tại, nút “Xem hồ sơ”.
+- Danh sách gợi ý:
+  - Với **Student**: lớp nên tham gia, bài học gợi ý.
+  - Với **Teacher**: học sinh mới, lớp cần follow-up.
+  - Với **Parent**: con của bạn, lớp/giáo viên gợi ý.
 
 ### 🍭 Palette "Tươi Mới & Cảm Hứng"
-Màu sắc được tuyển chọn để tạo cảm giác thư giãn nhưng vẫn đầy năng lượng:
+Màu sắc vẫn giữ triết lý cũ nhưng được áp vào layout mới:
 
 | Thành phần | Màu sắc | Mã màu | Ý nghĩa |
 |---|---|---|---|
-| **Nền ứng dụng** | ![#F0FDF4](https://via.placeholder.com/15/F0FDF4/000000?text=+) | `#F0FDF4` | Xanh lá bạc hà cực nhạt, tạo sự thư giãn. |
-| **Thẻ chức năng** | ![#FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) | `#FFFFFF` | Trắng tinh khiết cho các ô Bento. |
+| **Nền ứng dụng** | ![#F0FDF4](https://via.placeholder.com/15/F0FDF4/000000?text=+) | `#F0FDF4` | Xanh lá bạc hà cực nhạt, dùng làm background chính cho toàn bộ layout 3 cột. |
+| **Thẻ chức năng / card feed** | ![#FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) | `#FFFFFF` | Trắng tinh khiết cho các card feed (bài tập, lớp học, thông báo). |
 | **Màu chủ đạo** | ![#059669](https://via.placeholder.com/15/059669/000000?text=+) | `#059669` | Xanh Emerald - Màu của sự phát triển. |
-| **Tiêu đề** | ![#064E3B](https://via.placeholder.com/15/064E3B/000000?text=+) | `#064E3B` | Xanh lá đậm sâu, tạo sự tin cậy. |
-| **Nội dung** | ![#475569](https://via.placeholder.com/15/475569/000000?text=+) | `#475569` | Xám trung tính, dễ đọc. |
-| **Màu nhấn** | ![#FB7185](https://via.placeholder.com/15/FB7185/000000?text=+) | `#FB7185` | Hồng san hô - Dùng cho nút "Tim" hoặc "Yêu thích". |
+| **Tiêu đề / text nổi bật** | ![#064E3B](https://via.placeholder.com/15/064E3B/000000?text=+) | `#064E3B` | Xanh lá đậm sâu, dùng cho heading, tên lớp, tên bài tập. |
+| **Nội dung / mô tả** | ![#475569](https://via.placeholder.com/15/475569/000000?text=+) | `#475569` | Xám trung tính, dễ đọc trên nền trắng. |
+| **Màu nhấn (action)** | ![#FB7185](https://via.placeholder.com/15/FB7185/000000?text=+) | `#FB7185` | Hồng san hô – dùng cho badge thông báo, icon “tim”, CTA thứ cấp. |
+
+### 🧑‍🤝‍🧑 Điều chỉnh menu theo vai trò (role-based nav)
+
+- **Teacher**
+  - `Trang chủ` – feed lớp, bài tập, điểm số mới.
+  - `Lớp học` – quản lý lớp dạy, tạo lớp mới.
+  - `Bài tập` – danh sách bài tập đã giao, tạo bài tập.
+  - `Tin nhắn` – chat với học sinh/phụ huynh (future).
+  - `Thông báo` – yêu cầu join lớp, nộp bài mới.
+  - `Hồ sơ` – thông tin cá nhân, đổi mật khẩu.
+
+- **Student**
+  - `Trang chủ` – feed bài tập sắp đến hạn, thông báo mới.
+  - `Lớp học` – lớp đã tham gia, nhập mã lớp.
+  - `Bài tập` – bài tập của tôi.
+  - `Tin nhắn`, `Thông báo`, `Hồ sơ` giống trên nhưng nội dung phù hợp học sinh.
+
+- **Parent**
+  - `Trang chủ` – tổng quan tiến độ học tập của các con.
+  - `Lớp học` – lớp mà con đang tham gia.
+  - `Bài tập` – bài tập của từng con (filter theo profile).
+  - `Tin nhắn` – trao đổi với giáo viên/gia sư.
+  - `Thông báo`, `Hồ sơ` – tương tự, nhưng thiên về quản lý gia đình.
+
+Những mô tả này là **guideline thiết kế** cho phần UI. Khi triển khai, các component/layout sẽ bọc quanh các feature hiện có (`auth`, `classrooms`, `assignments`, ...) nhưng giữ nguyên kiến trúc Lego/FSD.
 
 ---
 

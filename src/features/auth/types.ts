@@ -8,6 +8,7 @@ export interface User {
     role: 'student' | 'teacher' | 'admin' | 'parent';
     avatar?: string;
     createdAt: string;
+    mustChangePassword?: boolean;
 }
 
 // --- Login ---
@@ -33,4 +34,14 @@ export interface RegisterRequest {
 export interface RegisterResponse {
     message: string;
     user: User;
+}
+
+// --- Change password ---
+export interface ChangePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+}
+
+export interface ChangePasswordResponse {
+    message: string;
 }

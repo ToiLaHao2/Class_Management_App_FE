@@ -34,8 +34,14 @@ httpClient.interceptors.response.use(
     (error) => {
         // Xử lý 401 Unauthorized toàn app (đẩy về trang login)
         if (error.response?.status === 401) {
-            useAuthStore.getState().logout();
-            window.location.href = '/login';
+            const url = error.config?.url as string | undefined;
+            const isLoginRequest = url?.startsWith('/auth/login');
+
+            // Với login sai mật khẩu: chỉ trả lỗi cho UI hiển thị, KHÔNG redirect
+            if (!isLoginRequest) {
+                useAuthStore.getState().logout();
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }

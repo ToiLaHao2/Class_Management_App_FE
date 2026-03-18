@@ -1,8 +1,16 @@
 // src/pages/auth/RegisterPage.tsx
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { RegisterForm } from '../../features/auth';
+import { useAuthStore } from '../../stores/authStore';
 
 const RegisterPage = () => {
+    const token = useAuthStore((s) => s.token);
+
+    if (token) {
+        // Nếu đã đăng nhập thì không cho quay lại trang đăng ký
+        return <Navigate to="/" replace />;
+    }
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-bg-app p-4">
             <div className="w-full max-w-lg">
