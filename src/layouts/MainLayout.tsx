@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -6,89 +7,165 @@ import {
   User, 
   LayoutDashboard, 
   Calendar,
-  MoreVertical,
-  ShoppingBag
+  ShoppingBag,
+  LogOut,
+  Settings
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 
-const navByRole = (_role: string | undefined) => {
-  // Demo Mode: Show Teacher tabs for everyone
+const navByRole = (role: string | undefined) => {
+  if (role === 'teacher') {
+    return [
+      { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
+      { to: '/classes', label: 'Lớp học', icon: BookOpen },
+      { to: '/calendar', label: 'Lịch dạy', icon: Calendar },
+      { to: '/materials', label: 'Học liệu', icon: ClipboardList },
+      { to: '/notifications', label: 'Thông báo', icon: Bell },
+      { to: '/profile', label: 'Hồ sơ', icon: User },
+    ];
+  }
+
+  if (role === 'parent') {
+    return [
+      { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
+      { to: '/kids', label: 'Con của tôi', icon: BookOpen },
+      { to: '/finance', label: 'Học phí', icon: ClipboardList },
+      { to: '/notifications', label: 'Thông báo', icon: Bell },
+    ];
+  }
+
+  if (role === 'student') {
+    return [
+      { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
+      { to: '/schedule', label: 'Lịch học', icon: Calendar },
+      { to: '/my-classes', label: 'Lớp của tôi', icon: BookOpen },
+      { to: '/assignments', label: 'Bài tập', icon: ClipboardList },
+      { to: '/notifications', label: 'Thông báo', icon: Bell },
+    ];
+  }
+
+  // Default / Admin
   return [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
-    { to: '/classes', label: 'Lớp học', icon: BookOpen },
-    { to: '/calendar', label: 'Lịch dạy', icon: Calendar },
-    { to: '/materials', label: 'Học liệu', icon: ClipboardList },
     { to: '/notifications', label: 'Thông báo', icon: Bell },
-    { to: '/profile', label: 'Hồ sơ', icon: User },
   ];
 };
 
-export const MainLayout = () => {
-  const user = useAuthStore((s) => s.user);
+export const MainLayout: React.FC = () => {
   const location = useLocation();
-  const navItems = navByRole(user?.role);
+  const { user, demoRole, setDemoRole, logout } = useAuthStore();
+  const effectiveRole = demoRole || user?.role;
+  const navItems = navByRole(effectiveRole);
+
+  const isAdmin = user?.role === 'admin';
 
   return (
-    <div className="min-h-screen bg-bg-app text-body font-sans selection:bg-primary/20">
-      <div className="max-w-7xl mx-auto flex">
-        {/* Sidebar left */}
-        <aside className="hidden md:flex md:flex-col md:w-64 border-r border-emerald-100/50 py-8 px-6 sticky top-0 h-screen overflow-y-auto no-scrollbar">
-          <div className="flex items-center gap-3 mb-10 px-2 transition-transform hover:scale-[1.02]">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-primary/20">
-              <BookOpen size={22} />
+    <div className="flex min-h-screen bg-bg-app font-sans">
+      {/* Admin Perspective Switcher (Floating) */}
+      {isAdmin && (
+        <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-2 p-3 bg-white/90 backdrop-blur-md rounded-2xl border border-emerald-100 shadow-2xl scale-90 origin-bottom-right hover:scale-100 transition-transform">
+          <div className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1 px-2">Admin Perspective</div>
+          <div className="flex gap-1">
+            {['teacher', 'parent', 'student'].map((r) => (
+              <button
+                key={r}
+                onClick={() => setDemoRole(r)}
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                  effectiveRole === r 
+                    ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' 
+                    : 'bg-emerald-50 text-primary/40 hover:bg-emerald-100'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+            <button
+              onClick={() => setDemoRole(null)}
+              className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-rose-50 text-rose-500 hover:bg-rose-100"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r border-emerald-50 flex flex-col sticky top-0 h-screen overflow-y-auto no-scrollbar shadow-sm z-50">
+        <div className="p-8 pb-4">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform">
+              <span className="text-white font-black text-xl italic leading-none">C</span>
             </div>
             <div>
-              <div className="font-bold text-heading text-lg leading-tight tracking-tight">Classify</div>
-              <div className="text-[10px] uppercase tracking-wider font-bold text-primary/70">
-                {user?.role === 'teacher' ? 'Tutor Workstation' : 'Learning Space'}
-              </div>
+              <h1 className="text-xl font-black text-heading italic tracking-tighter leading-none">Classify</h1>
+              <p className="text-[10px] font-bold text-body/40 uppercase tracking-[0.2em] mt-1 italic">
+                {effectiveRole || 'Master'} HUB
+              </p>
             </div>
-          </div>
+          </Link>
 
-          <nav className="flex-1 space-y-1.5">
+          <nav className="mt-12 space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.to;
+              const active = location.pathname === item.to;
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 group ${
-                    isActive 
-                      ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                      : 'hover:bg-emerald-50 text-body/80 hover:text-heading'
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group ${
+                    active
+                      ? 'bg-primary text-white shadow-xl shadow-primary/20 translate-x-1'
+                      : 'text-body/60 hover:bg-emerald-50 hover:text-primary'
                   }`}
                 >
-                  <Icon size={18} className={`${isActive ? 'text-white' : 'text-primary/70 group-hover:text-primary'} transition-colors`} />
-                  <span className="text-sm font-semibold tracking-wide">{item.label}</span>
+                  <Icon
+                    size={20}
+                    className={active ? 'text-white' : 'group-hover:scale-110 transition-transform'}
+                  />
+                  <span className="font-bold text-sm tracking-tight">{item.label}</span>
                 </Link>
               );
             })}
           </nav>
+        </div>
 
-          {user && (
-            <div className="mt-8 pt-6 border-t border-emerald-100/50">
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/50 backdrop-blur-sm border border-emerald-100/50 hover:bg-white transition-colors cursor-pointer group">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-100 to-white flex items-center justify-center text-sm font-bold text-primary border border-emerald-100 shadow-sm">
-                  {user.fullName.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-heading text-[13px] truncate">{user.fullName}</div>
-                  <div className="text-[11px] text-body/50 truncate font-medium capitalize">{user.role}</div>
-                </div>
-                <MoreVertical size={14} className="text-body/30 group-hover:text-body/60 transition-colors" />
-              </div>
+        {/* User Footer Section */}
+        {user && (
+          <div className="mt-auto p-6 border-t border-emerald-50">
+            <div className="flex flex-col gap-4">
+               <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-primary font-black border border-emerald-100 shadow-sm">
+                    {user.fullName?.charAt(0) || user.email?.charAt(0)}
+                  </div>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-xs font-black text-heading truncate">{user.fullName || user.email}</span>
+                    <span className="text-[10px] font-bold text-body/40 uppercase tracking-widest">{effectiveRole}</span>
+                  </div>
+               </div>
+               <div className="grid grid-cols-2 gap-2">
+                  <button className="p-2.5 rounded-xl bg-emerald-50 text-primary/60 hover:bg-emerald-100 transition-colors flex items-center justify-center">
+                    <Settings size={16} />
+                  </button>
+                  <button onClick={() => logout()} className="p-2.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-colors flex items-center justify-center">
+                    <LogOut size={16} />
+                  </button>
+               </div>
             </div>
-          )}
-        </aside>
+          </div>
+        )}
+      </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 py-8 px-6 md:px-8 max-w-5xl mx-auto w-full">
-            <Outlet />
-        </main>
-      </div>
+      {/* Main Content Area */}
+      <main className="flex-1 min-w-0 overflow-y-auto no-scrollbar relative">
+        {/* Top Header Placeholder / Blur background */}
+        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-emerald-50/50 to-transparent -z-10" />
+        <div className="p-8 max-w-6xl mx-auto">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 };
-

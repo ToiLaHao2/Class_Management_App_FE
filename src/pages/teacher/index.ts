@@ -1,13 +1,13 @@
 import DashboardPage from './DashboardPage';
-import MarketplacePage from './MarketplacePage';
 import ClassManagementPage from './ClassManagementPage';
 import CalendarPage from './CalendarPage';
 import MaterialsPage from './MaterialsPage';
+import ProfilePage from './ProfilePage';
 
 export {
   DashboardPage,
-  MarketplacePage,
   ClassManagementPage,
   CalendarPage,
-  MaterialsPage
+  MaterialsPage,
+  ProfilePage
 };
