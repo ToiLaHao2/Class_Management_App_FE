@@ -104,3 +104,5 @@ export const AssignmentsPage: React.FC = () => {
     </div>
   );
 };
+
+export default AssignmentsPage;

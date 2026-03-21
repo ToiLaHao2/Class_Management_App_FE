@@ -1,4 +1,11 @@
-export * from './DashboardPage';
-export * from './SchedulePage';
-export * from './MyClassesPage';
-export * from './AssignmentsPage';
+import DashboardPage from './DashboardPage';
+import SchedulePage from './SchedulePage';
+import MyClassesPage from './MyClassesPage';
+import AssignmentsPage from './AssignmentsPage';
+
+export {
+  DashboardPage,
+  SchedulePage,
+  MyClassesPage,
+  AssignmentsPage
+};

@@ -12,8 +12,8 @@ import { GlassCard } from '../shared/components/GlassCard';
 import { useAuthStore } from '../stores/authStore';
 
 const MarketplacePage: React.FC = () => {
-  const { user, demoRole } = useAuthStore();
-  const effectiveRole = demoRole || user?.role;
+  const { user } = useAuthStore();
+  const effectiveRole = user?.role;
   const [activeTab, setActiveTab] = React.useState(0);
   
   const isParent = effectiveRole === 'parent';

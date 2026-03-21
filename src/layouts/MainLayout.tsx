@@ -9,7 +9,9 @@ import {
   Calendar,
   ShoppingBag,
   LogOut,
-  Settings
+  Settings,
+  Users,
+  Database
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 
@@ -47,7 +49,17 @@ const navByRole = (role: string | undefined) => {
     ];
   }
 
-  // Default / Admin
+  if (role === 'admin') {
+    return [
+      { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
+      { to: '/admin/users', label: 'Người dùng', icon: Users },
+      { to: '/admin/resources', label: 'Hệ thống', icon: Database },
+      { to: '/notifications', label: 'Thông báo', icon: Bell },
+    ];
+  }
+
+  // Default
   return [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/notifications', label: 'Thông báo', icon: Bell },
@@ -56,42 +68,12 @@ const navByRole = (role: string | undefined) => {
 
 export const MainLayout: React.FC = () => {
   const location = useLocation();
-  const { user, demoRole, setDemoRole, logout } = useAuthStore();
-  const effectiveRole = demoRole || user?.role;
+  const { user, logout } = useAuthStore();
+  const effectiveRole = user?.role;
   const navItems = navByRole(effectiveRole);
-
-  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="flex min-h-screen bg-bg-app font-sans">
-      {/* Admin Perspective Switcher (Floating) */}
-      {isAdmin && (
-        <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-2 p-3 bg-white/90 backdrop-blur-md rounded-2xl border border-emerald-100 shadow-2xl scale-90 origin-bottom-right hover:scale-100 transition-transform">
-          <div className="text-[10px] font-black text-primary/40 uppercase tracking-widest mb-1 px-2">Admin Perspective</div>
-          <div className="flex gap-1">
-            {['teacher', 'parent', 'student'].map((r) => (
-              <button
-                key={r}
-                onClick={() => setDemoRole(r)}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                  effectiveRole === r 
-                    ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' 
-                    : 'bg-emerald-50 text-primary/40 hover:bg-emerald-100'
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-            <button
-              onClick={() => setDemoRole(null)}
-              className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-rose-50 text-rose-500 hover:bg-rose-100"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-emerald-50 flex flex-col sticky top-0 h-screen overflow-y-auto no-scrollbar shadow-sm z-50">
         <div className="p-8 pb-4">

@@ -88,3 +88,5 @@ export const SchedulePage: React.FC = () => {
     </div>
   );
 };
+
+export default SchedulePage;

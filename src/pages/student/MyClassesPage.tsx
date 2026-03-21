@@ -94,3 +94,5 @@ export const MyClassesPage: React.FC = () => {
     </div>
   );
 };
+
+export default MyClassesPage;
