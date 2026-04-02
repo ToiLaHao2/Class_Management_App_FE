@@ -11,7 +11,8 @@ const ROLE_OPTIONS = [
 
 export const RegisterForm = () => {
     const [formData, setFormData] = useState<RegisterRequest>({
-        fullName: '',
+        full_name: '',
+        username: '',
         email: '',
         password: '',
         role: 'student',
@@ -64,21 +65,89 @@ export const RegisterForm = () => {
                 </div>
             </div>
 
-            <div>
-                <label htmlFor="register-fullname" className="block text-sm font-semibold text-heading mb-1.5">
-                    Họ và tên
-                </label>
-                <input
-                    id="register-fullname"
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    placeholder="Nguyễn Văn A"
-                    required
-                    className="w-full px-4 py-3 bg-bg-app border border-emerald-200 rounded-xl focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all placeholder:text-body/40"
-                />
+            <div className="grid grid-cols-2 gap-3">
+                <div>
+                    <label htmlFor="register-fullname" className="block text-sm font-semibold text-heading mb-1.5">
+                        Họ và tên
+                    </label>
+                    <input
+                        id="register-fullname"
+                        type="text"
+                        name="full_name"
+                        value={formData.full_name}
+                        onChange={handleChange}
+                        placeholder="Nguyễn Văn A"
+                        required
+                        className="w-full px-4 py-3 bg-bg-app border border-emerald-200 rounded-xl focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all placeholder:text-body/40"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="register-username" className="block text-sm font-semibold text-heading mb-1.5">
+                        Tên đăng nhập (Username)
+                    </label>
+                    <input
+                        id="register-username"
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        placeholder="van_a_2024"
+                        required
+                        className="w-full px-4 py-3 bg-bg-app border border-emerald-200 rounded-xl focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all placeholder:text-body/40"
+                    />
+                </div>
             </div>
+
+            {/* Dynamic Fields based on Role */}
+            {formData.role === 'teacher' && (
+                <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+                    <label htmlFor="register-bio" className="block text-sm font-semibold text-heading mb-1.5">
+                        Giới thiệu ngắn (Bio)
+                    </label>
+                    <input
+                        id="register-bio"
+                        type="text"
+                        name="bio"
+                        value={formData.bio || ''}
+                        onChange={handleChange}
+                        placeholder="VD: Giáo viên toán 10 năm kinh nghiệm..."
+                        className="w-full px-4 py-3 bg-bg-app border border-emerald-200 rounded-xl focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all placeholder:text-body/40"
+                    />
+                </div>
+            )}
+
+            {formData.role === 'student' && (
+                <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <div>
+                        <label htmlFor="register-school" className="block text-sm font-semibold text-heading mb-1.5">
+                            Trường học
+                        </label>
+                        <input
+                            id="register-school"
+                            type="text"
+                            name="school"
+                            value={formData.school || ''}
+                            onChange={handleChange}
+                            placeholder="VD: THPT Chu Văn An"
+                            className="w-full px-4 py-3 bg-bg-app border border-emerald-200 rounded-xl focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all placeholder:text-body/40"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="register-grade" className="block text-sm font-semibold text-heading mb-1.5">
+                            Lớp
+                        </label>
+                        <input
+                            id="register-grade"
+                            type="text"
+                            name="grade"
+                            value={formData.grade || ''}
+                            onChange={handleChange}
+                            placeholder="VD: 10A1"
+                            className="w-full px-4 py-3 bg-bg-app border border-emerald-200 rounded-xl focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all placeholder:text-body/40"
+                        />
+                    </div>
+                </div>
+            )}
 
             <div>
                 <label htmlFor="register-email" className="block text-sm font-semibold text-heading mb-1.5">

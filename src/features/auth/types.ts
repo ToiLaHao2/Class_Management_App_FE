@@ -3,8 +3,9 @@
 
 export interface User {
     id: string;
-    email: string;
-    fullName: string;
+    email?: string; // Optional cho học viên nhỏ tuổi
+    username: string; // Tên đăng nhập
+    full_name: string;
     role: 'student' | 'teacher' | 'admin' | 'parent';
     avatar?: string;
     createdAt: string;
@@ -13,7 +14,7 @@ export interface User {
 
 // --- Login ---
 export interface LoginRequest {
-    email: string;
+    identifier: string; // Email hoặc Username
     password: string;
 }
 
@@ -22,13 +23,17 @@ export interface LoginResponse {
     user: User;
 }
 
-// --- Register ---
 export interface RegisterRequest {
     email: string;
+    username: string; // Tên đăng nhập
     password: string;
-    fullName: string;
+    full_name: string;
     role: 'student' | 'teacher' | 'parent';
     avatar?: string;
+    // Profile extra fields
+    bio?: string;
+    school?: string;
+    grade?: string;
 }
 
 export interface RegisterResponse {

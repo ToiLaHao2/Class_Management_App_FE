@@ -1,18 +1,17 @@
 // src/core/http/index.ts
 import axios from 'axios';
 import { useAuthStore } from '../../stores/authStore';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+import { ENV } from '../config/env';
 
 export const httpClient = axios.create({
-    baseURL: API_URL,
-    timeout: 10000,
+    baseURL: ENV.API_URL,
+    timeout: 30000, // Tăng timeout lên 30s cho các tác vụ upload/ai sau này
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// Interceptor cho Request: Đính kèm Token
+// Interceptor cho Request: Đính kèm Token từ Zustand Store
 httpClient.interceptors.request.use(
     (config) => {
         const token = useAuthStore.getState().token;
@@ -21,24 +20,24 @@ httpClient.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-// Interceptor cho Response: Xử lý lỗi toàn cục
+// Interceptor cho Response: Đồng bộ dữ liệu và xử lý lỗi Unauthorized
 httpClient.interceptors.response.use(
     (response) => {
-        return response.data; // Trả về data luôn để ngắn gọn
+        // TSOA/Express trả về data trực tiếp, chúng ta bóc tách luôn ở đây
+        return response.data;
     },
     (error) => {
-        // Xử lý 401 Unauthorized toàn app (đẩy về trang login)
+        // Xử lý lỗi 401 (Hết hạn Token hoặc Token không hợp lệ)
         if (error.response?.status === 401) {
-            const url = error.config?.url as string | undefined;
-            const isLoginRequest = url?.startsWith('/auth/login');
+            const url = error.config?.url || '';
+            const isLoginRequest = url.includes('/auth/login');
 
-            // Với login sai mật khẩu: chỉ trả lỗi cho UI hiển thị, KHÔNG redirect
+            // Nếu không phải đang login mà bị 401 thì mới logout
             if (!isLoginRequest) {
+                console.warn('⚠️ Token expired or invalid. Logging out...');
                 useAuthStore.getState().logout();
                 window.location.href = '/login';
             }

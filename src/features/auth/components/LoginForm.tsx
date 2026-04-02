@@ -3,27 +3,27 @@ import { useState } from 'react';
 import { useLogin } from '../hooks/useLogin';
 
 export const LoginForm = () => {
-    const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const { mutate: login, isPending, isError, error } = useLogin();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        login({ email, password });
+        login({ identifier, password });
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-                <label htmlFor="login-email" className="block text-sm font-semibold text-heading mb-1.5">
-                    Email
+                <label htmlFor="login-identifier" className="block text-sm font-semibold text-heading mb-1.5">
+                    Email hoặc Tên đăng nhập
                 </label>
                 <input
-                    id="login-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
+                    id="login-identifier"
+                    type="text"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="example@mail.com hoặc username"
                     required
                     className="w-full px-4 py-3 bg-bg-app border border-emerald-200 rounded-xl focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all placeholder:text-body/40"
                 />

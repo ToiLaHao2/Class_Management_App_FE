@@ -8,38 +8,27 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { StatCard } from '../../shared/components/StatCard';
+import { useTeacherClasses } from '../../features/teacher/hooks/useTeacherClasses';
 import { ClassCard } from '../../features/teacher/components/ClassCard';
 import { GlassCard } from '../../shared/components/GlassCard';
 
 const TeacherDashboardPage: React.FC = () => {
-  const stats = [
-    { label: 'Lớp học', value: '12', icon: BookOpen, trend: { value: '+2 tháng này', isPositive: true } },
-    { label: 'Học sinh', value: '48', icon: Users, trend: { value: '+5 học sinh mới', isPositive: true } },
-    { label: 'Chờ chấm', value: '5', icon: ClipboardList, trend: { value: 'Cần hoàn thành sớm', isPositive: false } },
-  ];
+  const { data: classes, isLoading } = useTeacherClasses();
 
-  const featuredClasses = [
-    { title: 'Toán 9A', students: 12, schedule: 'Thứ 2, 4, 6' },
-    { title: 'Lý 10B', students: 8, schedule: 'Thứ 3, 5' },
-    { title: 'Hóa 11C', students: 15, schedule: 'Thứ 7, CN' },
-    { title: 'Anh 9D', students: 10, schedule: 'Thứ 2, 5' },
+  const stats = [
+    { label: 'Lớp học', value: classes?.length.toString() || '0', icon: BookOpen, trend: { value: 'Theo thời gian thực', isPositive: true } },
+    { label: 'Học sinh', value: classes?.reduce((acc, curr) => acc + curr.studentCount, 0).toString() || '0', icon: Users, trend: { value: 'Tổng số học sinh', isPositive: true } },
+    { label: 'Trạng thái', value: 'Hoạt động', icon: CheckCircle2, trend: { value: 'Hệ thống ổn định', isPositive: true } },
   ];
 
   const activities = [
     {
-      title: 'Bài tập mới trong lớp Toán 9A',
-      time: '2 phút trước',
-      meta: 'Hạn nộp: 3 ngày nữa',
-      desc: 'Hoàn thành 5 bài tập về hệ phương trình bậc nhất hai ẩn trong sách bài tập, trang 45.',
-      type: 'assignment'
-    },
-    {
-      title: 'Lớp tiếng Anh mới được mở',
-      time: '30 phút trước',
-      meta: 'Teacher Linh',
-      desc: 'Luyện nói theo chủ đề với giáo viên nước ngoài, tối thứ 3 & 5 hàng tuần.',
+      title: 'Chào mừng bạn quay lại!',
+      time: 'Vừa xong',
+      meta: 'Hệ thống',
+      desc: 'Dữ liệu lớp học của bạn đã được đồng bộ hóa hoàn toàn với server Classify.',
       type: 'class'
-    }
+    },
   ];
 
   return (
@@ -54,19 +43,35 @@ const TeacherDashboardPage: React.FC = () => {
       {/* Quick Access / Active Classes */}
       <div>
         <div className="flex items-center justify-between mb-6 px-1">
-          <h3 className="font-bold text-heading text-xl">Lớp học tiêu biểu</h3>
+          <h3 className="font-bold text-heading text-xl">Lớp học hiện tại</h3>
           <button className="text-xs font-bold text-primary hover:underline uppercase tracking-wider">Xem tất cả</button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredClasses.map((cls, idx) => (
-            <ClassCard 
-              key={idx} 
-              {...cls} 
-              type="Môn học" 
-              rating={5.0} 
-            />
-          ))}
-        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-48 bg-emerald-50/50 animate-pulse rounded-3xl border border-emerald-100" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {classes?.map((cls) => (
+              <ClassCard 
+                key={cls.id} 
+                title={cls.name}
+                students={cls.studentCount}
+                schedule={cls.description || 'Chưa cập nhật mô tả'}
+                type="Lớp học của tôi" 
+                rating={5.0} 
+              />
+            ))}
+            {classes?.length === 0 && (
+              <div className="col-span-full p-12 text-center bg-white rounded-3xl border-2 border-dashed border-emerald-100 italic text-body/40">
+                Bạn chưa có lớp học nào. Hãy tạo lớp học đầu tiên!
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Feed cards */}

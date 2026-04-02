@@ -24,10 +24,14 @@ export const changePasswordApi = (data: ChangePasswordRequest): Promise<ChangePa
     return httpClient.post('/auth/change-password', data);
 };
 
+export const registerChildApi = (data: { username: string, full_name: string }): Promise<{ message: string, studentId: string }> => {
+    return httpClient.post('/auth/register-child', data);
+};
+
 export const getCurrentUserApi = (): Promise<User> => {
     return httpClient.get('/auth/me');
 };
 
-export const updateCurrentUserApi = (data: Partial<Pick<User, 'fullName' | 'avatar'>>): Promise<User> => {
+export const updateCurrentUserApi = (data: Partial<Pick<User, 'full_name' | 'avatar'>>): Promise<User> => {
     return httpClient.put('/auth/me', data);
 };

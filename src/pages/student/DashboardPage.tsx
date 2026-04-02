@@ -13,13 +13,11 @@ import { GlassCard } from '../../shared/components/GlassCard';
 import { StatCard } from '../../shared/components/StatCard';
 import { useAuthStore } from '../../stores/authStore';
 
+import { useStudentClasses } from '../../features/student/hooks/useStudentClasses';
+
 export const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
-
-  const todayClasses = [
-    { time: '08:00', title: 'Toán học nâng cao 9', teacher: 'Thầy Minh', type: 'Live Class' },
-    { time: '14:30', title: 'Luyện thi IELTS', teacher: 'Ms. Lan', type: 'Video' },
-  ];
+  const { data: classes, isLoading } = useStudentClasses();
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -31,9 +29,9 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[10px] font-black text-primary uppercase tracking-widest">Học tập mỗi ngày</span>
           </div>
           <h1 className="text-4xl font-black text-heading italic tracking-tighter">
-            Chào {user?.fullName || 'bạn'}! 👋
+            Chào {user?.full_name || 'bạn'}! 👋
           </h1>
-          <p className="text-body/60 font-medium">Hôm nay bạn có 2 tiết học và 3 bài tập cần hoàn thành.</p>
+          <p className="text-body/60 font-medium">Bạn đang tham gia {classes?.length || 0} lớp học tích cực.</p>
         </div>
         
         <GlassCard variant="white" className="flex items-center gap-4 px-6 py-4 border-orange-100 bg-orange-50/30">
@@ -41,8 +39,8 @@ export const DashboardPage: React.FC = () => {
             <Flame size={24} fill="currentColor" />
           </div>
           <div>
-            <div className="text-2xl font-black text-orange-600 italic">12 Ngày</div>
-            <div className="text-[10px] font-black text-orange-400 uppercase tracking-widest leading-none">Chuỗi học tập 🔥</div>
+            <div className="text-2xl font-black text-orange-600 italic">Hôm nay</div>
+            <div className="text-[10px] font-black text-orange-400 uppercase tracking-widest leading-none">Trạng thái học tập 🔥</div>
           </div>
         </GlassCard>
       </header>
@@ -50,55 +48,66 @@ export const DashboardPage: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard 
-          label="Khóa học đang học" 
-          value="4" 
+          label="Lớp học của tôi" 
+          value={classes?.length.toString() || '0'} 
           icon={BookOpen} 
-          trend={{ value: "+1 tháng này", isUp: true }}
+          trend={{ value: "Cập nhật mới", isUp: true }}
         />
         <StatCard 
-          label="Bài tập hoàn thành" 
-          value="28" 
+          label="Bài tập" 
+          value="0" 
           icon={ClipboardList} 
-          trend={{ value: "Top 5% lớp", isUp: true }}
+          trend={{ value: "Chưa có bài mới", isUp: false }}
         />
         <StatCard 
-          label="Điểm trung bình" 
-          value="8.5" 
+          label="Điểm tích lũy" 
+          value="100" 
           icon={TrendingUp} 
-          trend={{ value: "Tăng 0.2", isUp: true }}
+          trend={{ value: "Hoạt động tốt", isUp: true }}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Today's Schedule */}
+        {/* Enrolled Classes Schedule */}
         <section className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between px-2">
             <h3 className="text-xl font-black text-heading italic tracking-tight flex items-center gap-2">
               <Clock size={20} className="text-primary" />
-              Lịch học hôm nay
+              Lớp đang theo học
             </h3>
             <button className="text-xs font-black text-primary uppercase tracking-widest hover:underline px-2">Xem tất cả</button>
           </div>
           
           <div className="space-y-4">
-            {todayClasses.map((item, i) => (
-              <GlassCard key={i} variant="white" className="group cursor-pointer hover:border-primary/30 transition-all">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="px-3 py-2 rounded-xl bg-emerald-50 text-primary font-black text-xs">
-                      {item.time}
+            {isLoading ? (
+              [1, 2].map(i => <div key={i} className="h-20 bg-emerald-50/50 animate-pulse rounded-2xl" />)
+            ) : (
+              classes?.map((item) => (
+                <GlassCard key={item.id} variant="white" className="group cursor-pointer hover:border-primary/30 transition-all">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="px-3 py-2 rounded-xl bg-emerald-50 text-primary font-black text-xs uppercase tracking-tighter">
+                        {item.enrollment_status === 'active' ? '📚 Đang học' : '⏳ Chờ'}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-heading group-hover:text-primary transition-colors">{item.name}</h4>
+                        <p className="text-[10px] text-body/40 font-bold uppercase tracking-widest">
+                          {item.description || 'Chưa có thông tin lịch học'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-heading group-hover:text-primary transition-colors">{item.title}</h4>
-                      <p className="text-[10px] text-body/40 font-bold uppercase tracking-widest">{item.teacher} • {item.type}</p>
-                    </div>
+                    <button className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                      <ChevronRight size={18} />
+                    </button>
                   </div>
-                  <button className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              </GlassCard>
-            ))}
+                </GlassCard>
+              ))
+            )}
+            {!isLoading && classes?.length === 0 && (
+              <div className="text-center p-10 bg-bg-app rounded-2xl border-2 border-dashed border-emerald-100 italic text-body/40">
+                Bạn chưa tham gia lớp học nào.
+              </div>
+            )}
           </div>
         </section>
 

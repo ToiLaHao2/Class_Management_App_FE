@@ -27,6 +27,8 @@ const MarketplaceRoute = () => {
     return <MarketplacePage />;
 };
 
+import RegisterChildPage from '../features/parent/pages/RegisterChildPage';
+
 export const AppRoutes = () => {
     return (
         <BrowserRouter>
@@ -51,6 +53,7 @@ export const AppRoutes = () => {
                         {/* Parent Specific Routes */}
                         <Route element={<RoleGuard allowedRoles={['parent', 'admin']} />}>
                             <Route path="/kids" element={<Parent.KidsManagementPage />} />
+                            <Route path="/parent/register-child" element={<RegisterChildPage />} />
                             <Route path="/finance" element={<Parent.FinancePage />} />
                         </Route>
 
