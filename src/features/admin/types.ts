@@ -11,6 +11,13 @@ export interface AdminDashboardStats {
     totalUsers: number;
     roleDistribution: RoleDistribution[];
     recentGrowth: string;
+    systemMetrics: {
+        activeClassesCount: number;
+        attachmentsCount: number;
+        attachmentsSizeMb: number;
+        storageProvider: string;
+        storageLimitGb: number;
+    };
 }
 
 export interface SystemHealth {

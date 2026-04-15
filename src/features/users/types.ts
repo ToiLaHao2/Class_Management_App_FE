@@ -4,24 +4,26 @@
 export interface AdminUser {
     id: string;
     email: string;
-    fullName: string;
-    role: 'student' | 'teacher' | 'admin';
-    avatar?: string;
-    createdAt: string;
-    isDeleted: boolean;
-    mustChangePassword?: boolean;
+    username: string;
+    full_name: string;
+    role: 'student' | 'teacher' | 'admin' | 'parent';
+    avatar_url?: string;
+    created_at: string;
+    is_active: boolean;
 }
 
 export interface UpdateUserRequest {
-    fullName?: string;
-    avatar?: string;
-    role?: 'student' | 'teacher' | 'admin';
+    full_name?: string;
+    avatar_url?: string;
+    role?: 'student' | 'teacher' | 'admin' | 'parent';
+    is_active?: boolean;
 }
 
 export interface CreateUserRequest {
-    email: string;
-    password: string;
-    fullName: string;
-    role: 'student' | 'teacher' | 'admin';
-    avatar?: string;
+    email?: string;
+    username: string;
+    password?: string;
+    full_name: string;
+    role: 'student' | 'teacher' | 'admin' | 'parent';
+    avatar_url?: string;
 }

@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run dev:multiport",
+    "dev:multiport": "vite",
+    "dev:one_port": "vite --mode oneport",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

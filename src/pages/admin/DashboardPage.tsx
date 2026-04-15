@@ -1,23 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
-  Activity, 
   Database, 
   TrendingUp, 
   AlertTriangle,
   Server,
   ShieldCheck,
   ChevronRight,
-  Plus,
-  Loader2
+  Loader2,
+  RefreshCw,
+  BookOpen
 } from 'lucide-react';
 import { GlassCard } from '../../shared/components/GlassCard';
 import { StatCard } from '../../shared/components/StatCard';
 import { useAdminStats, useSystemHealth } from '../../features/admin';
 
+/** Map provider key → human-readable label */
+const PROVIDER_LABELS: Record<string, string> = {
+  local: 'Local Dev',
+  cloudflare_r2: 'Cloudflare R2',
+  cloudinary: 'Cloudinary',
+  aws_s3: 'AWS S3',
+};
+
 export const DashboardPage: React.FC = () => {
+  const navigate = useNavigate();
   const { data: stats, isLoading: statsLoading } = useAdminStats();
-  const { data: health, isLoading: healthLoading } = useSystemHealth();
+  const { data: health, isLoading: healthLoading, refetch: refetchHealth } = useSystemHealth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Derive overall system status from health data
+  const overallStatus = health?.services.every(s => s.status === 'healthy') ? 'Tốt' : 'Cảnh báo';
+  const dbService = health?.services.find(s => s.name.includes('PostgreSQL'));
+  const providerKey = stats?.systemMetrics?.storageProvider || 'local';
+  const providerLabel = PROVIDER_LABELS[providerKey] || providerKey;
+
+  const handleRefreshHealth = async () => {
+    setIsRefreshing(true);
+    await refetchHealth();
+    setTimeout(() => setIsRefreshing(false), 600);
+  };
 
   const adminStats = [
     { 
@@ -26,13 +49,18 @@ export const DashboardPage: React.FC = () => {
       icon: Users, 
       trend: { value: stats?.recentGrowth || 'Đang cập nhật', isUp: true } 
     },
-    { label: 'Doanh thu Market (Ước tính)', value: '45.2M', icon: TrendingUp, trend: { value: '+8.5%', isUp: true } },
-    { label: 'Lưu trữ tài nguyên', value: '24.5 GB', icon: Database, trend: { value: 'Dưới giới hạn', isUp: true } },
-  ];
-
-  const systemAlerts = [
-    { type: 'warning', title: 'Máy chủ phản hồi tốt', desc: `Độ trễ trung bình: ${health?.services[0]?.latency || '...'}`, time: 'Vừa xong' },
-    { type: 'info', title: 'Cập nhật bảo mật', desc: 'Đã cấu hình JWT Role-based Guard thành công', time: '1 giờ trước' },
+    { 
+      label: 'Lớp học đang vận hành', 
+      value: stats?.systemMetrics?.activeClassesCount?.toLocaleString() || '0', 
+      icon: BookOpen, 
+      trend: { value: 'Tự động tính từ DB', isUp: true } 
+    },
+    { 
+      label: `Lưu trữ (${providerLabel})`, 
+      value: `${stats?.systemMetrics?.attachmentsSizeMb || 0} MB / ${stats?.systemMetrics?.storageLimitGb || 10} GB`, 
+      icon: Database, 
+      trend: { value: `${stats?.systemMetrics?.attachmentsCount || 0} tệp đã lưu`, isUp: true } 
+    },
   ];
 
   return (
@@ -46,26 +74,36 @@ export const DashboardPage: React.FC = () => {
           </div>
           <h1 className="text-4xl font-black text-heading italic tracking-tighter">Bảng điều khiển Admin</h1>
           <p className="text-body/60 font-medium italic">
-            Hệ thống đang hoạt động ổn định (Sức khỏe: {healthLoading ? '...' : 'Tốt'})
+            Hệ thống đang hoạt động ổn định · Sức khỏe: {healthLoading ? '...' : overallStatus} · Storage: {providerLabel}
           </p>
         </div>
         
         <div className="flex gap-3">
-           <button className="flex items-center gap-2 px-6 py-3 bg-white border border-emerald-100 rounded-2xl text-xs font-black uppercase tracking-widest text-primary shadow-sm hover:translate-y-[-2px] transition-all">
-              <Activity size={16} /> Reports
+           <button 
+             onClick={handleRefreshHealth}
+             className="flex items-center gap-2 px-6 py-3 bg-white border border-emerald-100 rounded-2xl text-xs font-black uppercase tracking-widest text-primary shadow-sm hover:translate-y-[-2px] transition-all"
+           >
+              <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} /> Làm mới
            </button>
-           <button className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
-              <Plus size={16} /> New Admin
+           <button 
+             onClick={() => navigate('/admin/resources')}
+             className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
+           >
+              <Server size={16} /> Hệ thống
            </button>
         </div>
       </header>
 
       {/* Primary Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {adminStats.map((stat, i) => (
-          <StatCard key={i} {...stat} />
-        ))}
-      </div>
+      {statsLoading ? (
+        <div className="flex justify-center p-10"><Loader2 className="animate-spin text-primary" /></div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {adminStats.map((stat, i) => (
+            <StatCard key={i} {...stat} />
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* System Health / Alerts */}
@@ -75,7 +113,12 @@ export const DashboardPage: React.FC = () => {
               <Server size={20} className="text-primary" />
               Sức khỏe hệ thống
             </h3>
-            <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline px-2">Chi tiết Log</button>
+            <button 
+              onClick={() => navigate('/admin/resources')}
+              className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline px-2"
+            >
+              Chi tiết Log →
+            </button>
           </div>
           
           <div className="space-y-4">
@@ -91,11 +134,24 @@ export const DashboardPage: React.FC = () => {
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
                          <h4 className="font-black text-heading italic">{service.name}</h4>
-                         <span className="text-[10px] font-bold text-body/30 uppercase">{service.latency}</span>
+                         <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg ${
+                           service.status === 'healthy' 
+                             ? 'bg-emerald-50 text-emerald-600' 
+                             : 'bg-rose-50 text-rose-600'
+                         }`}>
+                           {service.latency}
+                         </span>
                       </div>
-                      <p className="text-sm text-body/60">Trạng thái: {service.status.toUpperCase()}</p>
+                      <p className="text-sm text-body/60">
+                        Trạng thái: <span className={service.status === 'healthy' ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}>
+                          {service.status === 'healthy' ? '● ONLINE' : '● OFFLINE'}
+                        </span>
+                      </p>
                     </div>
-                    <button className="self-center p-2 rounded-xl bg-emerald-50 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => navigate('/admin/resources')}
+                      className="self-center p-2 rounded-xl bg-emerald-50 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       <ChevronRight size={18} />
                     </button>
                   </div>
@@ -106,8 +162,21 @@ export const DashboardPage: React.FC = () => {
             <GlassCard variant="emerald" className="text-white relative overflow-hidden group" noPadding={false}>
                <div className="relative z-10">
                   <h4 className="font-black text-lg italic tracking-tight">Cấu hình bảo mật</h4>
-                  <p className="text-xs text-white/80 font-medium leading-relaxed mt-1">Hệ thống đang chạy trên giao thức JWT Security với Role-based Guard.</p>
-                  <button className="mt-4 px-6 py-2 bg-white text-primary rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl">Kiểm tra ngay</button>
+                  <p className="text-xs text-white/80 font-medium leading-relaxed mt-1">
+                    JWT Security + Role-based Guard đang hoạt động. 
+                    Database Latency: <strong>{dbService?.latency || '...'}</strong>
+                  </p>
+                  <div className="flex gap-3 mt-4">
+                    <span className="px-3 py-1 bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                      🔒 JWT Active
+                    </span>
+                    <span className="px-3 py-1 bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                      🛡️ RBAC Guard
+                    </span>
+                    <span className="px-3 py-1 bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                      ⚡ Rate Limiter
+                    </span>
+                  </div>
                </div>
                <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:rotate-12 transition-transform">
                   <ShieldCheck size={120} />
@@ -139,8 +208,11 @@ export const DashboardPage: React.FC = () => {
                 ))
               )}
               
-              <button className="w-full py-3 mt-4 border border-primary/20 bg-primary/5 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
-                 Quản lý chi tiết
+              <button 
+                onClick={() => navigate('/admin/users')}
+                className="w-full py-3 mt-4 border border-primary/20 bg-primary/5 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+              >
+                 Quản lý chi tiết →
               </button>
            </GlassCard>
         </section>

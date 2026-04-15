@@ -38,8 +38,9 @@ export const UserManagementPage: React.FC = () => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(u =>
-        u.fullName.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
+        u.full_name?.toLowerCase().includes(q) ||
+        u.username?.toLowerCase().includes(q) ||
+        u.email?.toLowerCase().includes(q) ||
         u.id.toLowerCase().includes(q)
       );
     }
@@ -53,12 +54,18 @@ export const UserManagementPage: React.FC = () => {
     }
   };
 
-  const handleRoleChange = (userId: string, newRole: 'student' | 'teacher' | 'admin') => {
+  const handleUnbanUser = (userId: string) => {
+    if (confirm('Bạn có chắc muốn mở khóa tài khoản này?')) {
+      updateUserMutation.mutate({ userId, data: { is_active: true } });
+    }
+  };
+
+  const handleRoleChange = (userId: string, newRole: 'student' | 'teacher' | 'admin' | 'parent') => {
     updateUserMutation.mutate({ userId, data: { role: newRole } });
   };
 
   const getStatusInfo = (user: AdminUser) => {
-    if (user.isDeleted) return { label: 'Banned', variant: 'rose' as const, icon: ShieldAlert };
+    if (!user.is_active) return { label: 'Banned', variant: 'rose' as const, icon: ShieldAlert };
     if (user.mustChangePassword) return { label: 'Pending', variant: 'amber' as const, icon: Activity };
     return { label: 'Active', variant: 'primary' as const, icon: ShieldCheck };
   };
@@ -74,7 +81,7 @@ export const UserManagementPage: React.FC = () => {
         </div>
         
         <div className="flex gap-2 p-1 bg-emerald-50/50 rounded-2xl border border-emerald-100/50 w-fit">
-          {['all', 'teacher', 'student', 'admin'].map((tab) => (
+          {['all', 'teacher', 'student', 'parent', 'admin'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -103,9 +110,6 @@ export const UserManagementPage: React.FC = () => {
         <div className="h-6 w-px bg-emerald-100 mx-2" />
         <button className="flex items-center gap-2 p-2 hover:bg-emerald-50 rounded-xl transition-colors text-primary font-black text-[10px] uppercase tracking-widest">
            <Filter size={16} /> Lọc nâng cao
-        </button>
-        <button className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-           <UserPlus size={16} /> Thêm người dùng
         </button>
       </GlassCard>
 
@@ -144,17 +148,17 @@ export const UserManagementPage: React.FC = () => {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-4 flex-1">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg border-2 border-emerald-50 ${
-                        user.isDeleted ? 'bg-rose-50 text-rose-300' : 'bg-emerald-50 text-primary'
+                        !user.is_active ? 'bg-rose-50 text-rose-300' : 'bg-emerald-50 text-primary'
                       }`}>
-                        {user.avatar ? (
-                          <img src={user.avatar} alt={user.fullName} className="w-full h-full rounded-2xl object-cover" />
+                        {user.avatar_url ? (
+                          <img src={user.avatar_url} alt={user.username} className="w-full h-full rounded-2xl object-cover" />
                         ) : (
-                          user.fullName.charAt(0)
+                          user.full_name?.charAt(0).toUpperCase() || 'U'
                         )}
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <h3 className={`text-lg font-black italic tracking-tight ${user.isDeleted ? 'text-body/20 line-through' : 'text-heading'}`}>{user.fullName}</h3>
+                          <h3 className={`text-lg font-black italic tracking-tight ${!user.is_active ? 'text-body/20 line-through' : 'text-heading'}`}>{user.full_name}</h3>
                           <StatusBadge variant={user.role === 'teacher' ? 'primary' : user.role === 'admin' ? 'amber' : 'emerald'} size="sm">
                             {user.role}
                           </StatusBadge>
@@ -179,22 +183,32 @@ export const UserManagementPage: React.FC = () => {
                         {/* Role change dropdown placeholder */}
                         <select
                           value={user.role}
-                          onChange={(e) => handleRoleChange(user.id, e.target.value as 'student' | 'teacher' | 'admin')}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value as 'student' | 'teacher' | 'admin' | 'parent')}
                           className="p-2 rounded-xl bg-white border border-emerald-100 text-[10px] font-black uppercase tracking-widest text-body/60 hover:border-primary/30 transition-all cursor-pointer appearance-none"
                           disabled={updateUserMutation.isPending}
                         >
                           <option value="student">Student</option>
                           <option value="teacher">Teacher</option>
+                          <option value="parent">Parent</option>
                           <option value="admin">Admin</option>
                         </select>
-                        {!user.isDeleted && (
+                        {user.is_active ? (
                           <button
                             onClick={() => handleBanUser(user.id)}
                             disabled={deleteUserMutation.isPending}
                             className="p-2.5 rounded-xl bg-rose-50 text-rose-400 hover:bg-rose-100 hover:text-rose-600 transition-all disabled:opacity-50"
-                            title="Ban user"
+                            title="Khóa tài khoản"
                           >
                             <ShieldAlert size={18} />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleUnbanUser(user.id)}
+                            disabled={updateUserMutation.isPending}
+                            className="p-2.5 rounded-xl bg-emerald-50 text-emerald-400 hover:bg-emerald-100 hover:text-emerald-600 transition-all disabled:opacity-50"
+                            title="Mở khóa tài khoản"
+                          >
+                            <ShieldCheck size={18} />
                           </button>
                         )}
                         <button className="p-2.5 rounded-xl bg-white border border-emerald-100 text-body/40 hover:text-primary transition-all">

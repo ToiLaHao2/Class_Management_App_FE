@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { 
-  BookOpen, 
-  ClipboardList, 
-  Bell, 
-  User, 
-  LayoutDashboard, 
+import {
+  BookOpen,
+  ClipboardList,
+  Bell,
+  User,
+  LayoutDashboard,
   Calendar,
   ShoppingBag,
   LogOut,
@@ -52,7 +52,6 @@ const navByRole = (role: string | undefined) => {
   if (role === 'admin') {
     return [
       { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-      { to: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
       { to: '/admin/users', label: 'Người dùng', icon: Users },
       { to: '/admin/resources', label: 'Hệ thống', icon: Database },
       { to: '/notifications', label: 'Thông báo', icon: Bell },
@@ -97,11 +96,10 @@ export const MainLayout: React.FC = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group ${
-                    active
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group ${active
                       ? 'bg-primary text-white shadow-xl shadow-primary/20 translate-x-1'
                       : 'text-body/60 hover:bg-emerald-50 hover:text-primary'
-                  }`}
+                    }`}
                 >
                   <Icon
                     size={20}
@@ -118,23 +116,23 @@ export const MainLayout: React.FC = () => {
         {user && (
           <div className="mt-auto p-6 border-t border-emerald-50">
             <div className="flex flex-col gap-4">
-               <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-primary font-black border border-emerald-100 shadow-sm">
-                    {user.fullName?.charAt(0) || user.email?.charAt(0)}
-                  </div>
-                  <div className="flex flex-col overflow-hidden">
-                    <span className="text-xs font-black text-heading truncate">{user.fullName || user.email}</span>
-                    <span className="text-[10px] font-bold text-body/40 uppercase tracking-widest">{effectiveRole}</span>
-                  </div>
-               </div>
-               <div className="grid grid-cols-2 gap-2">
-                  <button className="p-2.5 rounded-xl bg-emerald-50 text-primary/60 hover:bg-emerald-100 transition-colors flex items-center justify-center">
-                    <Settings size={16} />
-                  </button>
-                  <button onClick={() => logout()} className="p-2.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-colors flex items-center justify-center">
-                    <LogOut size={16} />
-                  </button>
-               </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-primary font-black border border-emerald-100 shadow-sm">
+                  {user.full_name?.charAt(0) || user.email?.charAt(0)}
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-xs font-black text-heading truncate">{user.full_name || user.email}</span>
+                  <span className="text-[10px] font-bold text-body/40 uppercase tracking-widest">{effectiveRole}</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button className="p-2.5 rounded-xl bg-emerald-50 text-primary/60 hover:bg-emerald-100 transition-colors flex items-center justify-center">
+                  <Settings size={16} />
+                </button>
+                <button onClick={() => logout()} className="p-2.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-colors flex items-center justify-center">
+                  <LogOut size={16} />
+                </button>
+              </div>
             </div>
           </div>
         )}
