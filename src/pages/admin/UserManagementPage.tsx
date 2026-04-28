@@ -1,13 +1,12 @@
 import React from 'react';
-import { 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  UserPlus, 
-  ShieldCheck, 
-  ShieldAlert, 
+import {
+  Search,
+  Filter,
+  MoreHorizontal,
+  UserPlus,
+  ShieldCheck,
+  ShieldAlert,
   ChevronRight,
-  Activity,
   Loader2,
   AlertCircle
 } from 'lucide-react';
@@ -66,7 +65,6 @@ export const UserManagementPage: React.FC = () => {
 
   const getStatusInfo = (user: AdminUser) => {
     if (!user.is_active) return { label: 'Banned', variant: 'rose' as const, icon: ShieldAlert };
-    if (user.mustChangePassword) return { label: 'Pending', variant: 'amber' as const, icon: Activity };
     return { label: 'Active', variant: 'primary' as const, icon: ShieldCheck };
   };
 
@@ -79,17 +77,16 @@ export const UserManagementPage: React.FC = () => {
             {isLoading ? 'Đang tải...' : `Toàn bộ ${users?.length || 0} người dùng trên nền tảng`}
           </p>
         </div>
-        
+
         <div className="flex gap-2 p-1 bg-emerald-50/50 rounded-2xl border border-emerald-100/50 w-fit">
           {['all', 'teacher', 'student', 'parent', 'admin'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                activeTab === tab 
-                  ? 'bg-white text-primary shadow-sm ring-1 ring-emerald-100' 
+              className={`py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab
+                  ? 'bg-white text-primary shadow-sm ring-1 ring-emerald-100'
                   : 'text-body/40 hover:text-primary'
-              }`}
+                }`}
             >
               {tab === 'all' ? 'Tất cả' : tab}
             </button>
@@ -100,8 +97,8 @@ export const UserManagementPage: React.FC = () => {
       {/* Search & Bulk Actions */}
       <GlassCard variant="white" noPadding className="flex items-center gap-3 px-6 py-4 border-emerald-100/30">
         <Search size={20} className="text-body/30" />
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Tìm kiếm theo tên, email hoặc ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -109,7 +106,7 @@ export const UserManagementPage: React.FC = () => {
         />
         <div className="h-6 w-px bg-emerald-100 mx-2" />
         <button className="flex items-center gap-2 p-2 hover:bg-emerald-50 rounded-xl transition-colors text-primary font-black text-[10px] uppercase tracking-widest">
-           <Filter size={16} /> Lọc nâng cao
+          <Filter size={16} /> Lọc nâng cao
         </button>
       </GlassCard>
 
@@ -147,9 +144,8 @@ export const UserManagementPage: React.FC = () => {
                 <GlassCard key={user.id} variant="white" className="group hover:border-primary/20 transition-all cursor-pointer">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-4 flex-1">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg border-2 border-emerald-50 ${
-                        !user.is_active ? 'bg-rose-50 text-rose-300' : 'bg-emerald-50 text-primary'
-                      }`}>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg border-2 border-emerald-50 ${!user.is_active ? 'bg-rose-50 text-rose-300' : 'bg-emerald-50 text-primary'
+                        }`}>
                         {user.avatar_url ? (
                           <img src={user.avatar_url} alt={user.username} className="w-full h-full rounded-2xl object-cover" />
                         ) : (
@@ -173,9 +169,8 @@ export const UserManagementPage: React.FC = () => {
 
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50/50 border border-emerald-100/50">
-                        <span className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${
-                          status.variant === 'primary' ? 'text-emerald-600' : status.variant === 'amber' ? 'text-amber-500' : 'text-rose-500'
-                        }`}>
+                        <span className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${status.variant === 'primary' ? 'text-emerald-600' : status.variant === 'rose' ? 'text-rose-500' : 'text-rose-500'
+                          }`}>
                           <StatusIcon size={12} /> {status.label}
                         </span>
                       </div>
@@ -212,7 +207,7 @@ export const UserManagementPage: React.FC = () => {
                           </button>
                         )}
                         <button className="p-2.5 rounded-xl bg-white border border-emerald-100 text-body/40 hover:text-primary transition-all">
-                           <MoreHorizontal size={18} />
+                          <MoreHorizontal size={18} />
                         </button>
                       </div>
                       <button className="p-2.5 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">

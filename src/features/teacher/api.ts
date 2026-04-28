@@ -1,16 +1,22 @@
-// src/features/teacher/api.ts
 import { httpClient } from '../../core/http';
+import type { ClassSummary, CreateClassRequest, ClassStudent } from './types';
 
-export interface ClassSummary {
-    id: string;
-    name: string;
-    description?: string;
-    thumbnailUrl?: string;
-    studentCount: number;
-    status: string;
-}
+// Lấy danh sách lớp học của giáo viên hiện tại (dùng query param owner_id)
+export const getTeacherClassesApi = (ownerId?: string): Promise<ClassSummary[]> => {
+    return httpClient.get(`/classes${ownerId ? `?owner_id=${ownerId}` : ''}`);
+};
 
-export const getTeacherClassesApi = (): Promise<ClassSummary[]> => {
-    // API từ Phase 3: GET /classes
-    return httpClient.get('/classes');
+// Lấy chi tiết lớp học
+export const getClassDetailsApi = (classId: string): Promise<ClassSummary> => {
+    return httpClient.get(`/classes/${classId}`);
+};
+
+// Tạo lớp học mới
+export const createClassApi = (data: CreateClassRequest): Promise<ClassSummary> => {
+    return httpClient.post('/classes', data);
+};
+
+// Lấy danh sách học sinh trong lớp
+export const getClassStudentsApi = (classId: string): Promise<ClassStudent[]> => {
+    return httpClient.get(`/classes/${classId}/students`);
 };

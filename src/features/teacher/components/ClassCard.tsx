@@ -6,10 +6,12 @@ import {
   ExternalLink, 
   MoreVertical 
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { GlassCard } from '../../../shared/components/GlassCard';
 import { StatusBadge } from '../../../shared/components/StatusBadge';
 
 interface ClassCardProps {
+  id?: string;
   title: string;
   description?: string;
   students: number;
@@ -22,6 +24,7 @@ interface ClassCardProps {
 }
 
 export const ClassCard: React.FC<ClassCardProps> = ({ 
+  id,
   title, 
   description, 
   students, 
@@ -32,6 +35,8 @@ export const ClassCard: React.FC<ClassCardProps> = ({
   type,
   className = ''
 }) => {
+  const linkPath = id ? `/classes/${id}` : '#';
+
   return (
     <GlassCard variant="emerald" className={`group ${className}`}>
       <div className="flex items-start justify-between mb-4">
@@ -73,9 +78,12 @@ export const ClassCard: React.FC<ClassCardProps> = ({
           <Star size={12} fill="currentColor" />
           <span className="text-xs font-black">{rating || 5.0}</span>
         </div>
-        <button className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-primary shadow-sm hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all">
+        <Link 
+          to={linkPath}
+          className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-primary shadow-sm hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all"
+        >
           <ExternalLink size={16} />
-        </button>
+        </Link>
       </div>
     </GlassCard>
   );

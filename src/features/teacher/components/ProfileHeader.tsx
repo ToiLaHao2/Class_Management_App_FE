@@ -4,10 +4,13 @@ import { StatusBadge } from '../../../shared/components/StatusBadge';
 
 interface ProfileHeaderProps {
   user: {
-    fullName: string;
+    full_name: string;
+    avatar_url?: string;
     avatar?: string;
   } | null;
   rating?: number;
+  bio?: string;
+  isVerified?: boolean;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, rating = 4.9 }) => {
@@ -22,7 +25,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, rating = 4.9
                <div className="relative group flex-shrink-0">
                   <div className="w-32 h-32 rounded-[2.5rem] bg-white p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/20 transition-transform group-hover:scale-105">
                      <div className="w-full h-full rounded-[2.2rem] bg-emerald-50 flex items-center justify-center text-4xl font-black text-primary overflow-hidden">
-                        {user?.fullName.charAt(0).toUpperCase()}
+                        {user?.full_name?.charAt(0).toUpperCase() ?? '?'}
                      </div>
                   </div>
                   <button className="absolute bottom-1 right-1 p-2.5 bg-white rounded-2xl shadow-xl border border-emerald-100 text-primary hover:scale-110 active:scale-95 transition-all group-hover:bg-primary group-hover:text-white">
@@ -31,7 +34,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, rating = 4.9
                </div>
                <div className="space-y-1.5">
                   <h1 className="text-3xl font-black text-white leading-tight drop-shadow-md">
-                     {user?.fullName || 'Teacher Name'}
+                     {user?.full_name || 'Giáo viên'}
                   </h1>
                   <div className="flex items-center gap-3">
                      <StatusBadge variant="primary" className="bg-emerald-400/30 border-white/20 text-white">Giáo viên xác thực</StatusBadge>

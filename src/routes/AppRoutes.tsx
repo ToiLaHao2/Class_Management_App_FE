@@ -46,6 +46,7 @@ export const AppRoutes = () => {
                         {/* Teacher Specific Routes */}
                         <Route element={<RoleGuard allowedRoles={['teacher', 'admin']} />}>
                             <Route path="/classes" element={<Teacher.ClassManagementPage />} />
+                            <Route path="/classes/:id" element={<Teacher.ClassDetailsPage />} />
                             <Route path="/calendar" element={<Teacher.CalendarPage />} />
                             <Route path="/materials" element={<Teacher.MaterialsPage />} />
                         </Route>
